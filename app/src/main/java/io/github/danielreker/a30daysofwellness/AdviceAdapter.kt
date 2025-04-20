@@ -11,6 +11,8 @@ import io.github.danielreker.a30daysofwellness.model.Advice
 class AdviceAdapter(private val items: List<Advice>) :
     RecyclerView.Adapter<AdviceAdapter.AdviceViewHolder>() {
 
+    private var expandedPosition = -1
+
     class AdviceViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         val dayText: TextView = itemView.findViewById(R.id.day_number)
         val titleText: TextView = itemView.findViewById(R.id.advice_title)
@@ -30,6 +32,21 @@ class AdviceAdapter(private val items: List<Advice>) :
         holder.titleText.text = item.name
         holder.imageView.setImageResource(item.image)
         holder.descriptionText.text = item.description
+
+        val isExpanded = position == expandedPosition
+        holder.descriptionText.visibility = if (isExpanded) View.VISIBLE else View.GONE
+
+        holder.itemView.setOnClickListener {
+            val prevExpanded = expandedPosition
+            if (isExpanded) {
+                expandedPosition = -1
+                notifyItemChanged(position)
+            } else {
+                expandedPosition = position
+                notifyItemChanged(prevExpanded)
+                notifyItemChanged(position)
+            }
+        }
     }
 
     override fun getItemCount(): Int = items.size
